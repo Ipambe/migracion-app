@@ -1,4 +1,5 @@
 import { db } from '@/db/db'
+import migrations from '@/drizzle/migrations'
 import '@/global.css'
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
 import { Stack } from 'expo-router'

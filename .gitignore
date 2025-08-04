@@ -42,3 +42,4 @@ nativewind-env.d.ts
 android/
 pnpm-lock.yaml
 .env
+drizzle/
