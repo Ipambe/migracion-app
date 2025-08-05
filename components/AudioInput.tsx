@@ -1,7 +1,7 @@
 import { Feather } from '@expo/vector-icons'
 import { AudioModule, setAudioModeAsync } from 'expo-audio'
 import { useEffect } from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Text, TouchableOpacity, View } from 'react-native'
 
 interface AudioInputProps {
   isRecording: boolean
@@ -18,7 +18,10 @@ export const AudioInput = ({
     const setupAudio = async () => {
       const status = await AudioModule.requestRecordingPermissionsAsync()
       if (!status.granted) {
-        alert('Permission to access microphone was denied')
+        Alert.alert(
+          'Permiso denegado',
+          'La aplicacion necesita acceder a los permisos del microfono para grabar audios sobre el indocumentado.'
+        )
       }
       setAudioModeAsync({
         playsInSilentMode: true,

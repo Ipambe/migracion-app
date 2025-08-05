@@ -3,7 +3,7 @@ import {
   launchImageLibraryAsync,
   requestMediaLibraryPermissionsAsync
 } from 'expo-image-picker'
-import { Image, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Image, Text, TouchableOpacity, View } from 'react-native'
 
 interface ImageInputProps {
   image: string | null
@@ -15,7 +15,10 @@ export const ImageInput = ({ image, setImage }: ImageInputProps) => {
     const { granted } = await requestMediaLibraryPermissionsAsync()
 
     if (!granted) {
-      alert('Permiso denegado para acceder a la galería de imágenes.')
+      Alert.alert(
+        'Permiso denegado',
+        'La aplicacion necesita acceder a los permisos de la galería  para cargar imagenes sobre el indocumentado.'
+      )
       return
     }
 

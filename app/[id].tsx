@@ -2,9 +2,16 @@ import { AudioPlayer } from '@/components/AudioPlayer'
 import { db } from '@/db/db'
 import { Undocumented, undocumenteds } from '@/db/schema'
 import { eq } from 'drizzle-orm'
-import { useLocalSearchParams } from 'expo-router'
+import { router, Tabs, useLocalSearchParams } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native'
 
 export default function UndocumentedDetail() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -26,7 +33,10 @@ export default function UndocumentedDetail() {
   if (loading) {
     return (
       <View className='flex-1 items-center justify-center'>
-        <Text className='text-lg text-gray-500'>Cargando...</Text>
+        <ActivityIndicator
+          size='large'
+          color='#0000ff'
+        />
       </View>
     )
   }
@@ -42,8 +52,25 @@ export default function UndocumentedDetail() {
     )
   }
 
+  const deleteHandler = async () => {
+    await db.delete(undocumenteds).where(eq(undocumenteds.id, data.id))
+    router.back()
+  }
+
   return (
     <ScrollView className='flex-1 bg-white p-8'>
+      <Tabs.Screen
+        options={{
+          headerRight: () => (
+            <TouchableOpacity
+              className='mr-4'
+              onPress={deleteHandler}
+            >
+              <Text className='text-red-700'>Eliminar</Text>
+            </TouchableOpacity>
+          )
+        }}
+      />
       {data.imageUri && (
         <View className='mx-auto size-44 rounded-full border-2 border-blue-700 p-1'>
           <Image
@@ -77,9 +104,16 @@ export default function UndocumentedDetail() {
       <View className='mt-8 gap-2'>
         <Text className='text-2xl font-bold'>Sobre el encuentro</Text>
         <View className='rounded-lg border border-gray-200'>
-          <View className='flex-row items-center justify-between border-b border-gray-200 p-4'>
+          <View className='flex-row items-center justify-between gap-8 border-b border-gray-200 p-4'>
             <Text className='text-xl text-gray-500'>Descripcion</Text>
-            <Text className='text-xl'>{data.description}</Text>
+            <View style={{ flex: 1 }}>
+              <Text
+                className='text-xl'
+                style={{ flexWrap: 'wrap' }}
+              >
+                {data.description}
+              </Text>
+            </View>
           </View>
           {data.ubication && (
             <View className='flex-row items-center justify-between border-b border-gray-200 p-4'>
@@ -96,6 +130,7 @@ export default function UndocumentedDetail() {
         </View>
       </View>
       {data.voiceNoteUri && <AudioPlayer uri={data.voiceNoteUri} />}
+      <View className='p-10'></View>
     </ScrollView>
   )
 }

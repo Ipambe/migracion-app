@@ -1,32 +1,13 @@
 import { db } from '@/db/db'
-import { agents } from '@/db/schema'
 import migrations from '@/drizzle/migrations'
 import '@/global.css'
 import { Ionicons } from '@expo/vector-icons'
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator'
-import { Tabs, useRouter } from 'expo-router'
-import { useEffect } from 'react'
+import { router, Tabs } from 'expo-router'
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native'
 
 export default function RootLayout() {
   const { success, error } = useMigrations(db, migrations)
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!success) return
-    const seedDb = async () => {
-      const adolfo = await db.query.agents.findFirst()
-      if (adolfo) return
-      await db.insert(agents).values({
-        agentCode: '2023-1025',
-        motivationalQuote: '',
-        name: 'Rafael Adolfo',
-        surname: 'Rosa',
-        photoUri: '@/assets/images/adolfo.webp'
-      })
-    }
-    seedDb()
-  }, [success])
 
   if (error) {
     return (

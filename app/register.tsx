@@ -12,9 +12,9 @@ import {
   useAudioRecorderState
 } from 'expo-audio'
 import { copyAsync, documentDirectory } from 'expo-file-system'
-import { useRouter } from 'expo-router'
-import { useState } from 'react'
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { useFocusEffect, useRouter } from 'expo-router'
+import { useCallback, useState } from 'react'
+import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 
 export default function register() {
   const [name, setName] = useState('')
@@ -25,14 +25,25 @@ export default function register() {
   const [description, setDescription] = useState('')
   const [image, setImage] = useState<string | null>(null)
   const router = useRouter()
+  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY)
+  const recorderState = useAudioRecorderState(audioRecorder)
+
+  useFocusEffect(
+    useCallback(() => {
+      setName('')
+      setAge('')
+      setNationality('')
+      setDate(new Date())
+      setUbication('')
+      setDescription('')
+      setImage(null)
+    }, [])
+  )
 
   const onDateTimeChange = (_: DateTimePickerEvent, selectedDate?: Date) => {
     const currentDate = selectedDate
     if (currentDate) setDate(currentDate)
   }
-
-  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY)
-  const recorderState = useAudioRecorderState(audioRecorder)
 
   const record = async () => {
     await audioRecorder.prepareToRecordAsync()
@@ -45,12 +56,25 @@ export default function register() {
 
   const saveIndocumentado = async () => {
     try {
-      if (!name.trim()) return alert('El nombre es obligatorio')
+      if (!name.trim())
+        return Alert.alert('Nombre requerido', 'Por favor ingrese el nombre.')
       if (!age.trim() || isNaN(+age) || +age <= 0)
-        return alert('La edad debe ser un número positivo')
-      if (!nationality.trim()) return alert('La nacionalidad es obligatoria')
-      if (!date) return alert('La fecha es obligatoria')
-      if (!description.trim()) return alert('La descripción es obligatoria')
+        return Alert.alert(
+          'Edad inválida',
+          'La edad debe ser un número positivo.'
+        )
+      if (!nationality.trim())
+        return Alert.alert(
+          'Nacionalidad requerida',
+          'Por favor ingrese la nacionalidad.'
+        )
+      if (!date)
+        return Alert.alert('Fecha requerida', 'Por favor seleccione una fecha.')
+      if (!description.trim())
+        return Alert.alert(
+          'Descripción requerida',
+          'Por favor ingrese una descripción.'
+        )
 
       let imagePath: string | null = null
       if (image) {
@@ -79,12 +103,12 @@ export default function register() {
       })
       router.back()
     } catch (error) {
-      alert('Ocurrió un error al guardar: ' + error)
+      Alert.alert('Error', 'Ocurrió un error al guardar: ' + error)
     }
   }
 
   return (
-    <ScrollView className='flex-1 bg-white '>
+    <ScrollView className='pb-safe flex-1 bg-white'>
       <View className='gap-4 p-6'>
         <Input
           label='Nombre'
@@ -146,6 +170,7 @@ export default function register() {
           <Text className='text-lg text-white'>Guardar Indocumentado</Text>
         </TouchableOpacity>
       </View>
+      <View className='p-10'></View>
     </ScrollView>
   )
 }
