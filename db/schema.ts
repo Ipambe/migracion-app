@@ -12,7 +12,7 @@ const undocumenteds = sqliteTable('undocumenteds_table', {
   voiceNoteUri: text()
 })
 
-const agent = sqliteTable('agent_table', {
+const agents = sqliteTable('agent_table', {
   id: int().primaryKey({ autoIncrement: true }),
   name: text().notNull(),
   surname: text().notNull(),
@@ -23,13 +23,13 @@ const agent = sqliteTable('agent_table', {
 
 const schema = {
   undocumenteds,
-  agent
+  agents
 }
 
 type Undocumented = typeof undocumenteds.$inferSelect
-type Agent = typeof agent.$inferSelect
+type Agent = typeof agents.$inferSelect
 type Schema = typeof schema
 
 export type { Agent, Schema, Undocumented }
 
-export { agent, schema, undocumenteds }
+export { agents, schema, undocumenteds }
